@@ -65,9 +65,9 @@ Here is what each interface do
 | IEntraAuthorizationResolver   | Allows you to define which request to pass and which to block | `Twileloop.EntraID` gives a hit to this interface with enough information and executes your custom code to perform authorization. You can write custom code that checks for roles, scopes etc.. `Twileloop.EntraID` will deliver parsed JWT token, current running policy against [Authorize], HttpRequest etc.. so you can make the decision and inform back/return with a boolean indicating allow or block.
 
 ## Hope the above is clear. Let's create 3 classes to implement these 3 interfaces
-Create classes to implement your custom logic on different triggeres. Check to below code for each interface functions
+Create concrete classes to implement your custom logic. Check the below code-snippets for each interface functions
 
-### 1. IEntraEventLogger (My custom way to write logs)
+### 1. IEntraEventLogger (Here I prefer to channel incoming logs to Console window)
 ```csharp
 public class MyLogger : IEntraEventLogger
 {
@@ -99,7 +99,7 @@ public class MyLogger : IEntraEventLogger
 }
 ```
 
-### 2. IEntraConfigurationResolver (My custom way to read configuration and return as 'EntraConfig')
+### 2. IEntraConfigurationResolver (My custom way to read configuration. Here I prefer to read directly from appsettings.json & return as an 'EntraConfig' instance)
 ```csharp
 public class MyConfigResolver : IEntraConfigurationResolver
 {
@@ -118,7 +118,7 @@ public class MyConfigResolver : IEntraConfigurationResolver
 }
 ```
 
-### 3. IEntraAuthorizationResolver (My custom logic to pass or fail a request)
+### 3. IEntraAuthorizationResolver (This is my custom logic to decide who to allow and who to block)
 ```csharp
 public class MyAuthorizationResolver : IEntraAuthorizationResolver
 {
@@ -127,10 +127,6 @@ public class MyAuthorizationResolver : IEntraAuthorizationResolver
         //You'll get HttpContext, an active running policy (see appsettings.json) to know a policy class's structure. Also a pre-parsed JWT token from which you can extract and explore claims during an authorization procedure.
         //Inject the rest of your required service and build up your logic.
 
-        //Return an EntraAuthorizationResult that can be called like
-        //return new EntraAuthorizationResult(true);  - Indicating you allow the request (200 OK)
-        //return new EntraAuthorizationResult(false);  - Indicating you blocked the request (403 FORBIDDEN + Global message as API response)
-        //return new EntraAuthorizationResult(false, 'My custom message');  - Indicating you blocked the request (403 FORBIDDEN + Overrided message as API response)
 
         //Here's my example logic...
         //As you see in appsettings.json below, For active policy I need to check how many scopes are required. Then I compare with scopes available in token. If all required scopes are not present I return false. You can design your own by looking at scopes, roles, or any other claim in your token as well as querying your DB or calling an API.. 
@@ -142,6 +138,12 @@ public class MyAuthorizationResolver : IEntraAuthorizationResolver
         //Simply check if all required scopes are met
         var isScopesMet = policyScopes.Intersect(tokenScopes).Count() == policyScopes.Count();
 
+
+        //Return an EntraAuthorizationResult that can be called like
+        //return new EntraAuthorizationResult(true);  - Indicating you allow the request (200 OK)
+        //return new EntraAuthorizationResult(false);  - Indicating you blocked the request (403 FORBIDDEN + Global message as API response)
+        //return new EntraAuthorizationResult(false, 'My custom message');  - Indicating you blocked the request (403 FORBIDDEN + Overrided message as API response)
+
         return new EntraAuthorizationResult(isScopesMet, $"Sorry you don't have the following permissions: {string.Join(", ", policyScopes.Except(tokenScopes))} for endpoint: {context.Request.GetDisplayUrl()}");
     }
 }
@@ -152,19 +154,19 @@ Below is the full configuration in the format of `EntrabConfig`
 
 ```json
  "EntraConfig": {
-   "AppName": "ResumeBuilderAPI",
-   "ClientId": "52d96116-75b5-4a1e-9f8e-cc6a1fd9632f",
+   "AppName": "Sample API",
+   "ClientId": "xxxxxxxxxxxxxxxxxxxx",
 
    "EntraEndpoint": {
-     "Instance": "https://twileloopsecurity.b2clogin.com",
-     "Domain": "twileloopsecurity.onmicrosoft.com",
-     "TenantId": "0fc9fbfc-af6f-4448-9755-fa9ab698ee5c",
+     "Instance": "https://contoso.b2clogin.com",
+     "Domain": "contoso.onmicrosoft.com",
+     "TenantId": "xxxxxxxxxxxxxxxx",
      "Policy": "B2C_1_signupsignin",
      "Version": "v2.0"
    },
 
    "TokenGeneration": {
-     "ClientSecret": "NV58Q~Mo4XVwx_8HTqba6pghgQ062rnhhaFAJctu",
+     "ClientSecret": "xxxxxxxxxxxxxxxx",
      "AppRegistrations": [
        {
          "Name": "CustomerAPI",
