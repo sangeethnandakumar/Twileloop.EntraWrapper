@@ -33,7 +33,7 @@ dotnet add package Twileloop.EntraID
 ```
 
 ## Register In DI
-Registration is very simple, Just paste this sniplet to `Program.cs` and configure according to your need
+Registration is very simple, Just paste this sniplet to `Program.cs` and simply configure by looking the below table
 ```csharp
 builder.Services.AddEntraID(opt =>
 {
@@ -45,6 +45,185 @@ builder.Services.AddEntraID(opt =>
 
 | Option     | Description | Screenshot  | Default Value 
 | ---      | ---  | --- | ---
-| EnableEventLogging   | Do you want to see security events from `Twileloop.EntraID`. This is usefull in knowing what is happening under the hood. Turn it on only during development or to troubleshoot  |    | false
-| GlobalAuthenticationFailureResponse  | ✅
-| GlobalAuthorizationFailureResponse   | ✅
+| EnableEventLogging   | Do you want to see security events from `Twileloop.EntraID`? This is a very useful feature. Simply turning it `true` is not enough. You need to tell `Twileloop.EntraID` where you want to write event logs because you may want it to be in the console, files, or any custom implementation you have. We will discuss that in the next section. Turn it on only during development or troubleshooting since logging security events is not recommended for production scenarios. *Refer screenshots |  ![image](https://github.com/sangeethnandakumar/Twileloop.EntraID/assets/24974154/75371366-eff5-4334-b9b5-0a610e591e0d) | false
+| GlobalAuthenticationFailureResponse | What you want to show during an Authentication failure to the user. If preferred, Specify the text you want to show along 401 UNAUTHORIZED. *Refer screenshots |  ![image](https://github.com/sangeethnandakumar/Twileloop.EntraID/assets/24974154/b8e001f5-e741-40a6-a196-d7c29bf9e964) | Empty
+| GlobalAuthorizationFailureResponse  | What you want to show during an Authorization failure to the user. If preferred, Specify the text you want to show along 403 FORBIDDEN. For Authorization scenarios, if you prefer you can override this global message also. We will discuss below on that. *Refer screenshots  | ![image](https://github.com/sangeethnandakumar/Twileloop.EntraID/assets/24974154/e570582c-77cd-425c-8dc8-b2b1dc7cab2e) | Empty
+
+## That's It. Now just know the "3 Main Interfaces"
+To simplify and give you the maximum customization possibilities, I created 3 interfaces that support in 3 major tasks
+
+- IEntraEventLogger 
+- IEntraConfigurationResolver
+- IEntraAuthorizationResolver
+
+Here is what each interface do
+
+| Interface     | Description | Example Scenerio
+| ---      | ---  | ---
+| IEntraEventLogger   | Write security logs to wherever you prefer | `Twileloop.EntraID` delivers security event logs up to this interface. From here you can channel it to anywhere you need with your custom logic. Eg: Console, File, Database, Serilog, Seq, etc..
+| IEntraConfigurationResolver   | Allows you to pick AzureAD configuration from anywhere | `Twileloop.EntraID` gives a trigger to this interface when it needs configuration to set up security. You can write your custom logic to read configuration from anywhere you like including config files like appsettings.json, databases, API responses, etc.. Then put configuration information into `EntraConfig` record instance and return back to `Twileloop.EntraID`
+| IEntraAuthorizationResolver   | Allows you to define who allow access and who not to | `Twileloop.EntraID` gives a hit to this interface with enough information and executes your custom code to perform authorization. You can write custom code that checks for roles, scopes etc.. `Twileloop.EntraID` will deliver parsed JWT token, current running policy against [Authorize], HttpRequest etc.. so you can make the decision and inform back/return with a boolean. 
+
+## Hope the above is clear. Let's create 3 classes to implement these 3 interfaces
+Create classes to implement your custom logic on different triggeres. Check to below code for each interface functions
+
+### 1. IEntraEventLogger (My custom way to write logs)
+```csharp
+public class MyLogger : IEntraEventLogger
+{
+    private readonly ILogger<MyLogger> logger;
+    private readonly IOptions<EntraConfig> entraConfig;
+    private readonly IOptions<SecurityOptions> secuityOptions;
+
+    public MyLogger(ILogger<MyLogger> logger, IOptions<EntraConfig> entraConfig, IOptions<SecurityOptions> secuityOptions)
+    {
+        this.logger = logger;
+        this.entraConfig = entraConfig;
+        this.secuityOptions = secuityOptions;
+    }
+
+    public void OnFailure(string message)
+    {
+        Console.WriteLine(message);
+    }
+
+    public void OnInfo(string message)
+    {
+        Console.WriteLine(message);
+    }
+
+    public void OnSuccess(string message)
+    {
+        Console.WriteLine(message);
+    }
+}
+```
+
+### 2. IEntraConfigurationResolver (My custom way to read configuration and return as 'EntraConfig')
+```csharp
+public class MyConfigResolver : IEntraConfigurationResolver
+{
+    private readonly IConfiguration configuration;
+
+    public MyConfigResolver(IConfiguration configuration)
+    {
+        this.configuration = configuration;
+    }
+
+    public EntraConfig Resolve()
+    {
+        var config = configuration.GetSection("EntraConfig").Get<EntraConfig>();
+        return config;
+    }
+}
+```
+
+### 3. IEntraAuthorizationResolver (My custom logic to pass or fail a request)
+```csharp
+public class MyAuthorizationResolver : IEntraAuthorizationResolver
+{
+    public EntraAuthorizationResult ValidatePolicyAuthorization(HttpContext context, AuthorizationPolicy policy, JwtSecurityToken token)
+    {
+        //You'll get HttpContext, an active running policy (see appsettings.json) to know a policy class's structure. Also a pre-parsed JWT token from which you can extract and explore claims during an authorization procedure.
+        //Inject the rest of your required service and build up your logic.
+
+        //Return an EntraAuthorizationResult that can be called like
+        //return new EntraAuthorizationResult(true);  - Indicating you allow the request (200 OK)
+        //return new EntraAuthorizationResult(false);  - Indicating you blocked the request (403 FORBIDDEN + Global message as API response)
+        //return new EntraAuthorizationResult(false, 'My custom message');  - Indicating you blocked the request (403 FORBIDDEN + Overrided message as API response)
+
+        //Here's my example logic...
+        //As you see in appsettings.json below, For active policy I need to check how many scopes are required. Then I compare with scopes available in token. If all required scopes are not present I return false. You can design your own by looking at scopes, roles, or any other claim in your token as well as querying your DB or calling an API.. 
+
+        //Get all scopes from token
+        var tokenScopes = token.Claims.Where(x => x.Type == "scp").Select(x => x.Value);
+        //Get all scopes required
+        var policyScopes = policy.Claims.FirstOrDefault(x => x.Type == "scp")?.Values;
+        //Simply check if all required scopes are met
+        var isScopesMet = policyScopes.Intersect(tokenScopes).Count() == policyScopes.Count();
+
+        return new EntraAuthorizationResult(isScopesMet, $"Sorry you don't have the following permissions: {string.Join(", ", policyScopes.Except(tokenScopes))} for endpoint: {context.Request.GetDisplayUrl()}");
+    }
+}
+```
+
+## As you see in `MyConfigResolver : IEntraConfigurationResolver`, Here we read the config directly from appsettings.json
+Below is the full configuration in the format of `EntrabConfig`
+
+```json
+ "EntraConfig": {
+   "AppName": "ResumeBuilderAPI",
+   "ClientId": "52d96116-75b5-4a1e-9f8e-cc6a1fd9632f",
+
+   "EntraEndpoint": {
+     "Instance": "https://twileloopsecurity.b2clogin.com",
+     "Domain": "twileloopsecurity.onmicrosoft.com",
+     "TenantId": "0fc9fbfc-af6f-4448-9755-fa9ab698ee5c",
+     "Policy": "B2C_1_signupsignin",
+     "Version": "v2.0"
+   },
+
+   "TokenGeneration": {
+     "ClientSecret": "NV58Q~Mo4XVwx_8HTqba6pghgQ062rnhhaFAJctu",
+     "AppRegistrations": [
+       {
+         "Name": "CustomerAPI",
+         "Scopes": [ "scope1", "scope2" ]
+       },
+       {
+         "Name": "SubscriptionsAPI",
+         "Scopes": [ "scope1", "scope2" ]
+       }
+     ]
+   },
+
+   "TokenValidation": {
+     "Enable": true,
+     "AuthorizationPolicies": [
+       {
+         "Enable": true,
+         "Name": "PolicyA",
+         "Claims": [
+           {
+             "Type": "scp",
+             "Values": [ "Files.Read", "Files.Write" ]
+           }
+         ]
+       },
+       {
+         "Enable": false,
+         "Name": "PolicyB",
+         "Claims": [
+           {
+             "Type": "scp",
+             "Values": [ "Files.Read", "Files.Write" ]
+           }
+         ]
+       }
+     ]
+   }
+ }
+```
+
+## Register These Classes As Well In DI
+Add the above 3 interface implementations also to DI options
+
+```csharp
+builder.Services.AddSingleton<MyConfigResolver>();
+builder.Services.AddSingleton<MyLogger>();
+builder.Services.AddSingleton<MyAuthorizationResolver>();
+var serviceProvider = builder.Services.BuildServiceProvider();
+
+builder.Services.AddEntraID(opt =>
+{
+    opt.EnableEventLogging = true;
+    opt.GlobalAuthenticationFailureResponse = "You cannot consume the service.";
+    opt.GlobalAuthorizationFailureResponse = "You dont' have enough privilages to access the requested endpoint.";
+    //Register all 3
+    opt.ConfigurationResolver = serviceProvider.GetService<MyConfigResolver>(); 
+    opt.AuthorizationResolver = serviceProvider.GetService<MyAuthorizationResolver>(); 
+    opt.SecurityEventLogger = serviceProvider.GetService<MyLogger>();
+});
+```
+
+> The current version only supports token validation. OBO support and token generation support is not implemented. Validation flow is complete
