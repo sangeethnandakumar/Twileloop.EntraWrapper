@@ -14,13 +14,16 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddSingleton<MyConfigResolver>();
 builder.Services.AddSingleton<MyLogger>();
+builder.Services.AddSingleton<MyAuthorizationResolver>();
 var serviceProvider = builder.Services.BuildServiceProvider();
 
 builder.Services.AddEntraID(opt =>
 {
-    opt.Enable = true;
     opt.EnableEventLogging = true;
+    opt.GlobalAuthenticationFailureResponse = "You cannot consume the service.";
+    opt.GlobalAuthorizationFailureResponse = "You dont' have enough privilages to access the requested endpoint.";
     opt.ConfigurationResolver = serviceProvider.GetService<MyConfigResolver>(); 
+    opt.AuthorizationResolver = serviceProvider.GetService<MyAuthorizationResolver>(); 
     opt.SecurityEventLogger = serviceProvider.GetService<MyLogger>();
 });
 

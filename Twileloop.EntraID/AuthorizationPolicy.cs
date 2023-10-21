@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 
 namespace Twileloop.EntraID
 {
@@ -6,9 +7,6 @@ namespace Twileloop.EntraID
     {
         public bool Enable { get; set; }
         public string Name { get; set; }
-        public IEnumerable<string> ClientAccessTokenRoles { get; set; }
-        public IEnumerable<string> UserAccessTokenRoles { get; set; }
+        public IEnumerable<ClaimRequirements> Claims { get; set; }
     }
-
-
 }
