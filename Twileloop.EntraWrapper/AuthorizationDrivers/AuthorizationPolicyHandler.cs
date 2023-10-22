@@ -54,6 +54,21 @@ namespace Twileloop.EntraWrapper.AuthorizationDrivers
             //Read token
             securityLogger.LogInfo("Decoding JWT claims...");
             var bearerToken = httpContextAccessor.HttpContext.Request.Headers.Authorization.FirstOrDefault();
+
+            if(bearerToken is null)
+            {
+                securityLogger.LogFailure("No JWT security token found in request. Ensure if bearer token is propery sent in 'Authorization' header");
+                context.Fail();
+                httpContextAccessor.HttpContext.Response.OnStarting(async () =>
+                {
+                    httpContextAccessor.HttpContext.Response.StatusCode = 401;
+                    httpContextAccessor.HttpContext.Response.ContentType = "text/plain";
+                    await httpContextAccessor.HttpContext.Response.WriteAsync(securityOptions.Value.GlobalAuthenticationFailureResponse);
+                });
+                securityLogger.LogFailure("Emiting 401 UNAUTHORIZED");
+                return;
+            }
+
             var token = bearerToken.Replace("Bearer ", string.Empty);
             var jwtSecurityToken = tokenHandler.ReadJwtToken(token);
 
