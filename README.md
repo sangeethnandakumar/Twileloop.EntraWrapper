@@ -64,17 +64,23 @@ Here is what each interface do
 | IEntraConfigurationResolver   | Allows you to pick AzureAD configuration from anywhere | `Twileloop.EntraID` gives a trigger to this interface when it needs configuration to set up API security. You can write your custom logic to read configuration from anywhere you like including config files like appsettings.json, databases, API responses, etc.. Then put configuration information into an `EntraConfig` record instance and return back to `Twileloop.EntraID`
 | IEntraAuthorizationResolver   | Allows you to define which request to pass and which to block | `Twileloop.EntraID` gives a hit to this interface with enough information and executes your custom code to perform authorization. You can write custom code that checks for roles, scopes etc.. `Twileloop.EntraID` will deliver parsed JWT token, current running policy against [Authorize], HttpRequest etc.. so you can make the decision and inform back/return with a boolean indicating allow or block.
 
-## Hope the above is clear. Let's create 3 classes to implement these 3 interfaces
+> Hope the above is clear.
+
+# Let's create 3 classes to implement these 3 interfaces
 Create concrete classes to implement your custom logic. Check the below code-snippets for each interface functions
 
-### 1. IEntraEventLogger (Here I prefer to channel incoming logs to Console window)
+## 1. MyLogger : IEntraEventLogger
+Here I prefer to channel incoming logs to Console window
+
 ```csharp
+//Step 1: Implement interface
 public class MyLogger : IEntraEventLogger
 {
     private readonly ILogger<MyLogger> logger;
     private readonly IOptions<EntraConfig> entraConfig;
     private readonly IOptions<SecurityOptions> secuityOptions;
 
+    //Step 2: Inject whatever necessary for you (all optional)
     public MyLogger(ILogger<MyLogger> logger, IOptions<EntraConfig> entraConfig, IOptions<SecurityOptions> secuityOptions)
     {
         this.logger = logger;
@@ -84,23 +90,29 @@ public class MyLogger : IEntraEventLogger
 
     public void OnFailure(string message)
     {
+        //Step 3: Channel failure logs
         Console.WriteLine(message);
     }
 
     public void OnInfo(string message)
     {
+        //Step 4: Channel information logs
         Console.WriteLine(message);
     }
 
     public void OnSuccess(string message)
     {
+        //Step 5: Channel success logs
         Console.WriteLine(message);
     }
 }
 ```
 
-### 2. IEntraConfigurationResolver (My custom way to read configuration. Here I prefer to read directly from appsettings.json & return as an 'EntraConfig' instance)
+## 2. MyConfigResolver : IEntraConfigurationResolver
+My custom way to read configuration. Here I prefer to read directly from appsettings.json & return as an 'EntraConfig' instance)
+
 ```csharp
+//Step 1: Implement interface
 public class MyConfigResolver : IEntraConfigurationResolver
 {
     private readonly IConfiguration configuration;
@@ -112,16 +124,24 @@ public class MyConfigResolver : IEntraConfigurationResolver
 
     public EntraConfig Resolve()
     {
+        //Step 2: Read configuration from anywhere you prefer
         var config = configuration.GetSection("EntraConfig").Get<EntraConfig>();
+
+        //Step 3: Return as an 'EntraConfig' instance
         return config;
     }
 }
 ```
 
-### 3. IEntraAuthorizationResolver (This is my custom logic to decide who to allow and who to block)
+### 3. MyAuthorizationResolver : IEntraAuthorizationResolver
+This is my custom logic to decide who to allow and who to block
+
 ```csharp
+//Step 1: Implement interface
 public class MyAuthorizationResolver : IEntraAuthorizationResolver
 {
+
+    //Step 2: Implement your custom authorization logic
     public EntraAuthorizationResult ValidatePolicyAuthorization(HttpContext context, AuthorizationPolicy policy, JwtSecurityToken token)
     {
         //You'll get HttpContext, an active running policy (see appsettings.json to know a policy class's structure). And also, a pre-parsed JWT token from which you can extract and explore claims during your custom authorization procedure.
@@ -139,18 +159,21 @@ public class MyAuthorizationResolver : IEntraAuthorizationResolver
         var isScopesMet = policyScopes.Intersect(tokenScopes).Count() == policyScopes.Count();
 
 
-        //Return an EntraAuthorizationResult that can be called like
-        //return new EntraAuthorizationResult(true);  - Indicating you allow the request (200 OK)
-        //return new EntraAuthorizationResult(false);  - Indicating you blocked the request (403 FORBIDDEN + Global message as API response)
-        //return new EntraAuthorizationResult(false, 'My custom message');  - Indicating you blocked the request (403 FORBIDDEN + Overrided message as API response)
-
+        //Step 3: Return an 'EntraAuthorizationResult' that can be called like
         return new EntraAuthorizationResult(isScopesMet, $"Sorry you don't have the following permissions: {string.Join(", ", policyScopes.Except(tokenScopes))} for endpoint: {context.Request.GetDisplayUrl()}");
     }
 }
 ```
 
-## As you see in `MyConfigResolver : IEntraConfigurationResolver`, Here we read the config directly from appsettings.json
-Below is the full configuration in the format of `EntrabConfig`
+### Different ways you can return an `EntraAuthorizationResult`
+> `return new EntraAuthorizationResult(true);`  - Indicating you allow the request (Proceeds to endpoint...)
+
+> `return new EntraAuthorizationResult(false);`  - Indicating you blocked the request (403 FORBIDDEN + Global message as API response)
+
+> `return new EntraAuthorizationResult(false, 'My custom message');`  - Indicating you blocked the request (403 FORBIDDEN + Overrided custom new message as API response)
+
+## Configuration
+Below is the full configuration in the format of `EntraConfig`
 
 ```json
  "EntraConfig": {
