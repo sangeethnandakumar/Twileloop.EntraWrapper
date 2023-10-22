@@ -49,6 +49,14 @@ builder.Services.AddEntraID(opt =>
 | GlobalAuthenticationFailureResponse | What you want to show during an Authentication failure to the user. If preferred, Specify the text you want to show along 401 UNAUTHORIZED. *Refer screenshots |  ![image](https://github.com/sangeethnandakumar/Twileloop.EntraWrapper/assets/24974154/b8e001f5-e741-40a6-a196-d7c29bf9e964) | Empty
 | GlobalAuthorizationFailureResponse  | What you want to show during an Authorization failure to the user. If preferred, Specify the text you want to show along 403 FORBIDDEN. For Authorization scenarios, if you prefer you can override this global message also. We will discuss below on that. *Refer screenshots  | ![image](https://github.com/sangeethnandakumar/Twileloop.EntraWrapper/assets/24974154/e570582c-77cd-425c-8dc8-b2b1dc7cab2e) | Empty
 
+## Register the middlewares
+After `AddEntraID` is called in `Program.cs` to register necessary dependencies, Register the `Authentication` and `Authorization` middlewares
+
+```csharp
+app.UseAuthentication();
+app.UseAuthorization();
+```
+
 ## That's It. Now just know the "3 Main Interfaces"
 To simplify and give you the maximum customization possibilities, I created 3 interfaces that support in 3 major tasks
 
