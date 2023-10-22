@@ -49,6 +49,14 @@ builder.Services.AddEntraID(opt =>
 | GlobalAuthenticationFailureResponse | What you want to show during an Authentication failure to the user. If preferred, Specify the text you want to show along 401 UNAUTHORIZED. *Refer screenshots |  ![image](https://github.com/sangeethnandakumar/Twileloop.EntraWrapper/assets/24974154/b8e001f5-e741-40a6-a196-d7c29bf9e964) | Empty
 | GlobalAuthorizationFailureResponse  | What you want to show during an Authorization failure to the user. If preferred, Specify the text you want to show along 403 FORBIDDEN. For Authorization scenarios, if you prefer you can override this global message also. We will discuss below on that. *Refer screenshots  | ![image](https://github.com/sangeethnandakumar/Twileloop.EntraWrapper/assets/24974154/e570582c-77cd-425c-8dc8-b2b1dc7cab2e) | Empty
 
+## Register the middlewares
+After `AddEntraID` is called in `Program.cs` to register necessary dependencies, Register the `Authentication` and `Authorization` middlewares
+
+```csharp
+app.UseAuthentication();
+app.UseAuthorization();
+```
+
 ## That's It. Now just know the "3 Main Interfaces"
 To simplify and give you the maximum customization possibilities, I created 3 interfaces that support in 3 major tasks
 
@@ -230,30 +238,28 @@ Below is the full configuration in the format of `EntraConfig`
  }
 ```
 
+EntraConfig.TokenGeneration:
+
+> Not yet implemented. Will be available in future releases
+
 ## Configuration Explanations
 
 EntraConfig:
 
 Option |   Expected Value | Example
 |--| -----------------| ---
-AppName | Name for your API. Used for non critical purposes like logging | "Sample API"
+AppName | Name for your API. Used for non-critical purposes like logging | "Sample API"
 Client Id| ClientID of your API. Get it from EntraID AppRegistration page | "42d96116-25b5-1a1e-9a8e-ch6a1fd9632f"
 EntraEndpoint |     <table>  <tbody>  <tr>  <td>Instance</td> <td>Your AzureAD B2C Instance</td> <td>"https://contoso.b2clogin.com"</td>  </tr>  <tr>  <td>Domain</td>   <td>Your AzureAD B2C Domain</td><td>"contoso.onmicrosoft.com"</td>  </tr>  <tr>  <td>TenantID</td> <td>tenantID. You'll get it from App Registration page</td> <td>"42d96116-25b5-1a1e-9a8e-ch6a1fd9632f"</td>  </tr>  <tr>  <td>Policy</td> <td>Your UserFlow name in B2C</td> <td>"B2C_1_signupsignin"</td>  </tr> <tr>  <td>Version</td> <td>API version. Keep default v2.0</td> <td>"v2.0"</td>  </tr> </tbody>  </table>              |
 
 EntraConfig.TokenValidation:
 
-Option |   Expected Value | Example
-|--| -----------------| ---
-Enable| Enables or disables Authentication + Authorization globaly in your API. Use it like a toggle to enable or disable security | "true"
-AuthorizationPolicies |     <table>  <tbody>  <tr>  <td>Enable</td> <td>Enables or disables a particular policy</td> <td>"true"</td>  </tr>  <tr>  <td>Name</td>   <td>Name of your policy</td><td>"OnlyUsersWithScopeReadAccess"</td>  </tr>  <tr>  <td>Claims</td> <td><table>  <tbody>  <tr>  <td>Type</td> <td>Name of claim this policy is interested to look in. Eg: 'scope'</td> <td>"scp"</td>  </tr>  <tr>  <td>Values</td>   <td>Expected value to satisfy the policy</td><td>"File.Read"</td>  </tr> </tbody>  </table> 
+Option |   Expected Value
+|--| -----------------
+Enable| Enables or disables Authentication + Authorization globally in your API. Use it like a toggle to enable or disable security
+AuthorizationPolicies |  <table> <tbody> <tr> <td>Enable</td><td>Enables or disables a particular policy</td><td>"true"</td></tr><tr> <td>Name</td><td>Name of your policy</td><td>"OnlyUsersWithScopeReadAccess"</td></tr><tr> <td>Claims</td><td><table> <tbody> <tr> <td>Type</td><td>Name of claim this policy is interested to look in. Eg: 'scope'</td><td>"scp"</td></tr><tr> <td>Values</td><td>Expected value to satisfy the policy</td><td>"File.Read"</td></tr></tbody> </table><td>Any number of policies you prefer</td></tr></table>
 
-
-EntraConfig.TokenGeneration:
-> Not yet implenmented. Will be available in future releases
-
-
-
-## Register These Classes As Well In DI
+## Register In DI
 Add the above 3 interface implementations also to DI options
 
 ```csharp
@@ -267,6 +273,7 @@ builder.Services.AddEntraID(opt =>
     opt.EnableEventLogging = true;
     opt.GlobalAuthenticationFailureResponse = "You cannot consume the service.";
     opt.GlobalAuthorizationFailureResponse = "You dont' have enough privilages to access the requested endpoint.";
+
     //Register all 3
     opt.ConfigurationResolver = serviceProvider.GetService<MyConfigResolver>(); 
     opt.AuthorizationResolver = serviceProvider.GetService<MyAuthorizationResolver>(); 
@@ -275,3 +282,5 @@ builder.Services.AddEntraID(opt =>
 ```
 
 > The current version only supports token validation. OBO support and token generation support is not implemented. Validation flow is complete
+
+
