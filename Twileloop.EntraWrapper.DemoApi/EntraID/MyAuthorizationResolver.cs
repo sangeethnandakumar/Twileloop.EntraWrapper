@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http.Extensions;
 using System.IdentityModel.Tokens.Jwt;
 
-namespace Twileloop.EntraID.DemoApi.EntraID
+namespace Twileloop.EntraWrapper.DemoApi.EntraID
 {
     public class MyAuthorizationResolver : IEntraAuthorizationResolver
     {

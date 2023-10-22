@@ -1,6 +1,6 @@
 using Microsoft.IdentityModel.Logging;
-using Twileloop.EntraID;
-using Twileloop.EntraID.DemoApi.EntraID;
+using Twileloop.EntraWrapper;
+using Twileloop.EntraWrapper.DemoApi.EntraID;
 
 var builder = WebApplication.CreateBuilder(args);
 

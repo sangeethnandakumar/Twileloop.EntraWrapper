@@ -1,4 +1,4 @@
-﻿namespace Twileloop.EntraID.DemoApi.EntraID
+﻿namespace Twileloop.EntraWrapper.DemoApi.EntraID
 {
     public class MyConfigResolver : IEntraConfigurationResolver
     {

@@ -9,7 +9,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Twileloop.EntraID
+namespace Twileloop.EntraWrapper
 {
     public static class BuilderExtensions
     {

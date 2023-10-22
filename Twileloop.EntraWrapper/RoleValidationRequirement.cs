@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 
-namespace Twileloop.EntraID
+namespace Twileloop.EntraWrapper
 {
     public class RoleValidationRequirement : IAuthorizationRequirement
     {

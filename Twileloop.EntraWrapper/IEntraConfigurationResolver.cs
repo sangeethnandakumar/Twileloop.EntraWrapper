@@ -1,4 +1,4 @@
-﻿namespace Twileloop.EntraID
+﻿namespace Twileloop.EntraWrapper
 {
     public interface IEntraConfigurationResolver
     {

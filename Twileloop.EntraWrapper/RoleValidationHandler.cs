@@ -5,7 +5,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Twileloop.EntraID
+namespace Twileloop.EntraWrapper
 {
 
     public class RoleValidationHandler : AuthorizationHandler<RoleValidationRequirement>

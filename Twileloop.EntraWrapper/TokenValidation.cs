@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Twileloop.EntraID
+namespace Twileloop.EntraWrapper
 {
     public record TokenValidation
     {

@@ -13,7 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Twileloop.EntraID\Twileloop.EntraID.csproj" />
+    <ProjectReference Include="..\Twileloop.EntraWrapper\Twileloop.EntraWrapper.csproj" />
   </ItemGroup>
 
 </Project>

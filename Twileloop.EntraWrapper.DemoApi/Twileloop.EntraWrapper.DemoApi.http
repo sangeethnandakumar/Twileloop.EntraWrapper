@@ -1,0 +1,6 @@
+@Twileloop.EntraWrapper.DemoApi_HostAddress = http://localhost:5037
+
+GET {{Twileloop.EntraWrapper.DemoApi_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Options;
 
-namespace Twileloop.EntraID
+namespace Twileloop.EntraWrapper
 {
     public class SecurityLogger
     {

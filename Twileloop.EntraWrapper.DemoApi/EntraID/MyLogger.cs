@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Options;
 using Spectre.Console;
 
-namespace Twileloop.EntraID.DemoApi.EntraID
+namespace Twileloop.EntraWrapper.DemoApi.EntraID
 {
     public class MyLogger : IEntraEventLogger
     {

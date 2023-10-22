@@ -5,31 +5,31 @@
     <img src="https://1000logos.net/wp-content/uploads/2023/01/Microsoft-Azure-logo.png" alt="Logo" width="80">
   </a>
 
-  <h1 align="center"> Twileloop.EntraID </h1>
+  <h1 align="center"> Twileloop.EntraWrapper </h1>
   <small>Wrapper around Microsoft.Identity.Web</small>
   <h4 align="center"> PreBuilt Template | AzureAD B2C | Time Travel </h4>
 </div>
 
 ## About
-`Twileloop.EntraID` helps configuring AzureAD B2C by simplifying integration and giving a ready to use template. In the background this uses `Microsoft.Identity.Web`. 
+`Twileloop.EntraWrapper` helps configuring AzureAD B2C by simplifying integration and giving a ready to use template. In the background this uses `Microsoft.Identity.Web`. 
 
 <hr/>
 
 ## License
-> Twileloop.EntraID - is licensed under the MIT License (Honouring Microsoft.Identity.Web). See the LICENSE file for more details.
+> Twileloop.EntraWrapper - is licensed under the MIT License (Honouring Microsoft.Identity.Web). See the LICENSE file for more details.
 
 #### This library is absolutely free. If it gives you a smile, A small coffee would be a great way to support my work. Thank you for considering it!
 [!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/sangeethnanda)
 
 ## Full Documentation
-https://packages.twileloop.com/twileloop.entraid
+https://packages.twileloop.com/Twileloop.EntraWrapper
 
 ## Usage
 
 ## Install Package
 
 ```powershell
-dotnet add package Twileloop.EntraID
+dotnet add package Twileloop.EntraWrapper
 ```
 
 ## Register In DI
@@ -45,9 +45,9 @@ builder.Services.AddEntraID(opt =>
 
 | Option     | Description | Screenshot  | Default Value 
 | ---      | ---  | --- | ---
-| EnableEventLogging   | Do you want to see security events from `Twileloop.EntraID`? This is a very useful feature. Simply turning it `true` is not enough. You need to tell `Twileloop.EntraID` where you want to write event logs because you may want it to be in the console, files, or any custom implementation you have. We will discuss that in the next section. Turn it on only during development or troubleshooting since logging security events is not recommended for production scenarios. *Refer screenshots |  ![image](https://github.com/sangeethnandakumar/Twileloop.EntraID/assets/24974154/75371366-eff5-4334-b9b5-0a610e591e0d) | false
-| GlobalAuthenticationFailureResponse | What you want to show during an Authentication failure to the user. If preferred, Specify the text you want to show along 401 UNAUTHORIZED. *Refer screenshots |  ![image](https://github.com/sangeethnandakumar/Twileloop.EntraID/assets/24974154/b8e001f5-e741-40a6-a196-d7c29bf9e964) | Empty
-| GlobalAuthorizationFailureResponse  | What you want to show during an Authorization failure to the user. If preferred, Specify the text you want to show along 403 FORBIDDEN. For Authorization scenarios, if you prefer you can override this global message also. We will discuss below on that. *Refer screenshots  | ![image](https://github.com/sangeethnandakumar/Twileloop.EntraID/assets/24974154/e570582c-77cd-425c-8dc8-b2b1dc7cab2e) | Empty
+| EnableEventLogging   | Do you want to see security events from `Twileloop.EntraWrapper`? This is a very useful feature. Simply turning it `true` is not enough. You need to tell `Twileloop.EntraWrapper` where you want to write event logs because you may want it to be in the console, files, or any custom implementation you have. We will discuss that in the next section. Turn it on only during development or troubleshooting since logging security events is not recommended for production scenarios. *Refer screenshots |  ![image](https://github.com/sangeethnandakumar/Twileloop.EntraWrapper/assets/24974154/75371366-eff5-4334-b9b5-0a610e591e0d) | false
+| GlobalAuthenticationFailureResponse | What you want to show during an Authentication failure to the user. If preferred, Specify the text you want to show along 401 UNAUTHORIZED. *Refer screenshots |  ![image](https://github.com/sangeethnandakumar/Twileloop.EntraWrapper/assets/24974154/b8e001f5-e741-40a6-a196-d7c29bf9e964) | Empty
+| GlobalAuthorizationFailureResponse  | What you want to show during an Authorization failure to the user. If preferred, Specify the text you want to show along 403 FORBIDDEN. For Authorization scenarios, if you prefer you can override this global message also. We will discuss below on that. *Refer screenshots  | ![image](https://github.com/sangeethnandakumar/Twileloop.EntraWrapper/assets/24974154/e570582c-77cd-425c-8dc8-b2b1dc7cab2e) | Empty
 
 ## That's It. Now just know the "3 Main Interfaces"
 To simplify and give you the maximum customization possibilities, I created 3 interfaces that support in 3 major tasks
@@ -60,9 +60,9 @@ Here is what each interface do
 
 | Interface     | Description | Example Scenerio
 | ---      | ---  | ---
-| IEntraEventLogger   | Write security logs to wherever you prefer | `Twileloop.EntraID` delivers security event logs up to this interface. From here you can channel it to anywhere you need with your custom logic. Eg: Console, File, Database, Serilog, Seq, etc..
-| IEntraConfigurationResolver   | Allows you to pick AzureAD configuration from anywhere | `Twileloop.EntraID` gives a trigger to this interface when it needs configuration to set up API security. You can write your custom logic to read configuration from anywhere you like including config files like appsettings.json, databases, API responses, etc.. Then put configuration information into an `EntraConfig` record instance and return back to `Twileloop.EntraID`
-| IEntraAuthorizationResolver   | Allows you to define which request to pass and which to block | `Twileloop.EntraID` gives a hit to this interface with enough information and executes your custom code to perform authorization. You can write custom code that checks for roles, scopes etc.. `Twileloop.EntraID` will deliver parsed JWT token, current running policy against [Authorize], HttpRequest etc.. so you can make the decision and inform back/return with a boolean indicating allow or block.
+| IEntraEventLogger   | Write security logs to wherever you prefer | `Twileloop.EntraWrapper` delivers security event logs up to this interface. From here you can channel it to anywhere you need with your custom logic. Eg: Console, File, Database, Serilog, Seq, etc..
+| IEntraConfigurationResolver   | Allows you to pick AzureAD configuration from anywhere | `Twileloop.EntraWrapper` gives a trigger to this interface when it needs configuration to set up API security. You can write your custom logic to read configuration from anywhere you like including config files like appsettings.json, databases, API responses, etc.. Then put configuration information into an `EntraConfig` record instance and return back to `Twileloop.EntraWrapper`
+| IEntraAuthorizationResolver   | Allows you to define which request to pass and which to block | `Twileloop.EntraWrapper` gives a hit to this interface with enough information and executes your custom code to perform authorization. You can write custom code that checks for roles, scopes etc.. `Twileloop.EntraWrapper` will deliver parsed JWT token, current running policy against [Authorize], HttpRequest etc.. so you can make the decision and inform back/return with a boolean indicating allow or block.
 
 > Hope the above is clear.
 

@@ -1,4 +1,4 @@
-namespace Twileloop.EntraID.DemoApi
+namespace Twileloop.EntraWrapper.DemoApi
 {
     public class WeatherForecast
     {

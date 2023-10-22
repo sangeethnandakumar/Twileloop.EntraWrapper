@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Twileloop.EntraID.DemoApi.Controllers
+namespace Twileloop.EntraWrapper.DemoApi.Controllers
 {
     [ApiController]
     [Route("[controller]")]

@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.8.34205.153
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Twileloop.EntraID", "Twileloop.EntraID\Twileloop.EntraID.csproj", "{A1EAFB91-D5D8-44FB-B315-A4DC067750C2}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Twileloop.EntraWrapper", "Twileloop.EntraWrapper\Twileloop.EntraWrapper.csproj", "{A1EAFB91-D5D8-44FB-B315-A4DC067750C2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Twileloop.EntraID.DemoApi", "Twileloop.EntraID.DemoApi\Twileloop.EntraID.DemoApi.csproj", "{8608E60A-3A67-4362-8C23-3AFAAB4A31C7}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Twileloop.EntraWrapper.DemoApi", "Twileloop.EntraWrapper.DemoApi\Twileloop.EntraWrapper.DemoApi.csproj", "{8608E60A-3A67-4362-8C23-3AFAAB4A31C7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
