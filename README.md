@@ -207,6 +207,29 @@ Below is the full configuration in the format of `EntrabConfig`
  }
 ```
 
+## Configuration Explanations
+
+EntraConfig:
+
+Option |   Expected Value | Example
+|--| -----------------| ---
+AppName | Name for your API. Used for non critical purposes like logging | "Sample API"
+Client Id| ClientID of your API. Get it from EntraID AppRegistration page | "42d96116-25b5-1a1e-9a8e-ch6a1fd9632f"
+EntraEndpoint |     <table>  <tbody>  <tr>  <td>Instance</td> <td>Your AzureAD B2C Instance</td> <td>"https://contoso.b2clogin.com"</td>  </tr>  <tr>  <td>Domain</td>   <td>Your AzureAD B2C Domain</td><td>"contoso.onmicrosoft.com"</td>  </tr>  <tr>  <td>TenantID</td> <td>tenantID. You'll get it from App Registration page</td> <td>"42d96116-25b5-1a1e-9a8e-ch6a1fd9632f"</td>  </tr>  <tr>  <td>Policy</td> <td>Your UserFlow name in B2C</td> <td>"B2C_1_signupsignin"</td>  </tr> <tr>  <td>Version</td> <td>API version. Keep default v2.0</td> <td>"v2.0"</td>  </tr> </tbody>  </table>              |
+
+EntraConfig.TokenValidation:
+
+Option |   Expected Value | Example
+|--| -----------------| ---
+Enable| Enables or disables Authentication + Authorization globaly in your API. Use it like a toggle to enable or disable security | "true"
+AuthorizationPolicies |     <table>  <tbody>  <tr>  <td>Enable</td> <td>Enables or disables a particular policy</td> <td>"true"</td>  </tr>  <tr>  <td>Name</td>   <td>Name of your policy</td><td>"OnlyUsersWithScopeReadAccess"</td>  </tr>  <tr>  <td>Claims</td> <td><table>  <tbody>  <tr>  <td>Type</td> <td>Name of claim this policy is interested to look in. Eg: 'scope'</td> <td>"scp"</td>  </tr>  <tr>  <td>Values</td>   <td>Expected value to satisfy the policy</td><td>"File.Read"</td>  </tr> </tbody>  </table> 
+
+
+EntraConfig.TokenGeneration:
+> Not yet implenmented. Will be available in future releases
+
+
+
 ## Register These Classes As Well In DI
 Add the above 3 interface implementations also to DI options
 
