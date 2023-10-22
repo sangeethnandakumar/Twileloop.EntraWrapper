@@ -64,10 +64,14 @@ Here is what each interface do
 | IEntraConfigurationResolver   | Allows you to pick AzureAD configuration from anywhere | `Twileloop.EntraID` gives a trigger to this interface when it needs configuration to set up API security. You can write your custom logic to read configuration from anywhere you like including config files like appsettings.json, databases, API responses, etc.. Then put configuration information into an `EntraConfig` record instance and return back to `Twileloop.EntraID`
 | IEntraAuthorizationResolver   | Allows you to define which request to pass and which to block | `Twileloop.EntraID` gives a hit to this interface with enough information and executes your custom code to perform authorization. You can write custom code that checks for roles, scopes etc.. `Twileloop.EntraID` will deliver parsed JWT token, current running policy against [Authorize], HttpRequest etc.. so you can make the decision and inform back/return with a boolean indicating allow or block.
 
-## Hope the above is clear. Let's create 3 classes to implement these 3 interfaces
+> Hope the above is clear.
+
+# Let's create 3 classes to implement these 3 interfaces
 Create concrete classes to implement your custom logic. Check the below code-snippets for each interface functions
 
-### 1. IEntraEventLogger (Here I prefer to channel incoming logs to Console window)
+## 1. MyLogger : IEntraEventLogger
+Here I prefer to channel incoming logs to Console window
+
 ```csharp
 public class MyLogger : IEntraEventLogger
 {
@@ -99,7 +103,9 @@ public class MyLogger : IEntraEventLogger
 }
 ```
 
-### 2. IEntraConfigurationResolver (My custom way to read configuration. Here I prefer to read directly from appsettings.json & return as an 'EntraConfig' instance)
+## 2. MyConfigResolver : IEntraConfigurationResolver
+My custom way to read configuration. Here I prefer to read directly from appsettings.json & return as an 'EntraConfig' instance)
+
 ```csharp
 public class MyConfigResolver : IEntraConfigurationResolver
 {
@@ -118,7 +124,9 @@ public class MyConfigResolver : IEntraConfigurationResolver
 }
 ```
 
-### 3. IEntraAuthorizationResolver (This is my custom logic to decide who to allow and who to block)
+### 3. MyAuthorizationResolver : IEntraAuthorizationResolver
+This is my custom logic to decide who to allow and who to block
+
 ```csharp
 public class MyAuthorizationResolver : IEntraAuthorizationResolver
 {
