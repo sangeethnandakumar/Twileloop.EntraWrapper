@@ -73,12 +73,14 @@ Create concrete classes to implement your custom logic. Check the below code-sni
 Here I prefer to channel incoming logs to Console window
 
 ```csharp
+//Step 1: Implement interface
 public class MyLogger : IEntraEventLogger
 {
     private readonly ILogger<MyLogger> logger;
     private readonly IOptions<EntraConfig> entraConfig;
     private readonly IOptions<SecurityOptions> secuityOptions;
 
+    //Step 2: Inject whatever necessary for you (all optional)
     public MyLogger(ILogger<MyLogger> logger, IOptions<EntraConfig> entraConfig, IOptions<SecurityOptions> secuityOptions)
     {
         this.logger = logger;
@@ -88,16 +90,19 @@ public class MyLogger : IEntraEventLogger
 
     public void OnFailure(string message)
     {
+        //Step 3: Channel failure logs
         Console.WriteLine(message);
     }
 
     public void OnInfo(string message)
     {
+        //Step 4: Channel information logs
         Console.WriteLine(message);
     }
 
     public void OnSuccess(string message)
     {
+        //Step 5: Channel success logs
         Console.WriteLine(message);
     }
 }
@@ -107,6 +112,7 @@ public class MyLogger : IEntraEventLogger
 My custom way to read configuration. Here I prefer to read directly from appsettings.json & return as an 'EntraConfig' instance)
 
 ```csharp
+//Step 1: Implement interface
 public class MyConfigResolver : IEntraConfigurationResolver
 {
     private readonly IConfiguration configuration;
@@ -118,7 +124,10 @@ public class MyConfigResolver : IEntraConfigurationResolver
 
     public EntraConfig Resolve()
     {
+        //Step 2: Read configuration from anywhere you prefer
         var config = configuration.GetSection("EntraConfig").Get<EntraConfig>();
+
+        //Step 3: Return as an 'EntraConfig' instance
         return config;
     }
 }
@@ -128,8 +137,11 @@ public class MyConfigResolver : IEntraConfigurationResolver
 This is my custom logic to decide who to allow and who to block
 
 ```csharp
+//Step 1: Implement interface
 public class MyAuthorizationResolver : IEntraAuthorizationResolver
 {
+
+    //Step 2: Implement your custom authorization logic
     public EntraAuthorizationResult ValidatePolicyAuthorization(HttpContext context, AuthorizationPolicy policy, JwtSecurityToken token)
     {
         //You'll get HttpContext, an active running policy (see appsettings.json to know a policy class's structure). And also, a pre-parsed JWT token from which you can extract and explore claims during your custom authorization procedure.
@@ -147,15 +159,18 @@ public class MyAuthorizationResolver : IEntraAuthorizationResolver
         var isScopesMet = policyScopes.Intersect(tokenScopes).Count() == policyScopes.Count();
 
 
-        //Return an EntraAuthorizationResult that can be called like
-        //return new EntraAuthorizationResult(true);  - Indicating you allow the request (200 OK)
-        //return new EntraAuthorizationResult(false);  - Indicating you blocked the request (403 FORBIDDEN + Global message as API response)
-        //return new EntraAuthorizationResult(false, 'My custom message');  - Indicating you blocked the request (403 FORBIDDEN + Overrided message as API response)
-
+        //Step 3: Return an 'EntraAuthorizationResult' that can be called like
         return new EntraAuthorizationResult(isScopesMet, $"Sorry you don't have the following permissions: {string.Join(", ", policyScopes.Except(tokenScopes))} for endpoint: {context.Request.GetDisplayUrl()}");
     }
 }
 ```
+
+### Different ways you can return an `EntraAuthorizationResult`
+> `return new EntraAuthorizationResult(true);`  - Indicating you allow the request (Proceeds to endpoint...)
+
+> `return new EntraAuthorizationResult(false);`  - Indicating you blocked the request (403 FORBIDDEN + Global message as API response)
+
+> `return new EntraAuthorizationResult(false, 'My custom message');`  - Indicating you blocked the request (403 FORBIDDEN + Overrided custom new message as API response)
 
 ## Configuration
 Below is the full configuration in the format of `EntraConfig`
