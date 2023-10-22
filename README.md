@@ -124,7 +124,7 @@ public class MyAuthorizationResolver : IEntraAuthorizationResolver
 {
     public EntraAuthorizationResult ValidatePolicyAuthorization(HttpContext context, AuthorizationPolicy policy, JwtSecurityToken token)
     {
-        //You'll get HttpContext, an active running policy (see appsettings.json) to know a policy class's structure. Also a pre-parsed JWT token from which you can extract and explore claims during an authorization procedure.
+        //You'll get HttpContext, an active running policy (see appsettings.json to know a policy class's structure). And also, a pre-parsed JWT token from which you can extract and explore claims during your custom authorization procedure.
         //Inject the rest of your required service and build up your logic.
 
 
