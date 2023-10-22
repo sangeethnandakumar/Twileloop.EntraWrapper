@@ -149,8 +149,8 @@ public class MyAuthorizationResolver : IEntraAuthorizationResolver
 }
 ```
 
-## As you see in `MyConfigResolver : IEntraConfigurationResolver`, Here we read the config directly from appsettings.json
-Below is the full configuration in the format of `EntrabConfig`
+## Configuration
+Below is the full configuration in the format of `EntraConfig`
 
 ```json
  "EntraConfig": {
