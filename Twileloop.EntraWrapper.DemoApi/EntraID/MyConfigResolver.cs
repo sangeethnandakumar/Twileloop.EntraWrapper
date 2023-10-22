@@ -1,4 +1,7 @@
-﻿namespace Twileloop.EntraWrapper.DemoApi.EntraID
+﻿using Twileloop.EntraWrapper.Abstractions;
+using Twileloop.EntraWrapper.ConfigModels;
+
+namespace Twileloop.EntraWrapper.DemoApi.EntraID
 {
     public class MyConfigResolver : IEntraConfigurationResolver
     {

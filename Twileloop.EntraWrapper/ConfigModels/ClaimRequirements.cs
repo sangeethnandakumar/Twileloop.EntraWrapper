@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Twileloop.EntraWrapper
+namespace Twileloop.EntraWrapper.ConfigModels
 {
     public record ClaimRequirements
     {

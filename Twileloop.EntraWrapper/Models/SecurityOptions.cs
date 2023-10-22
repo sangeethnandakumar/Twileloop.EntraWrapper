@@ -1,4 +1,6 @@
-﻿namespace Twileloop.EntraWrapper
+﻿using Twileloop.EntraWrapper.Abstractions;
+
+namespace Twileloop.EntraWrapper.Models
 {
     public record SecurityOptions
     {

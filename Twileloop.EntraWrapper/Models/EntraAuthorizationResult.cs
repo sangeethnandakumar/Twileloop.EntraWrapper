@@ -1,9 +1,9 @@
-﻿namespace Twileloop.EntraWrapper
+﻿namespace Twileloop.EntraWrapper.Models
 {
     public record EntraAuthorizationResult
     {
         public bool IsAuthorised { get; set; } = false;
-        public string? OverrideAuthorizationFailureResponse { get; set; }
+        public string OverrideAuthorizationFailureResponse { get; set; }
 
         public EntraAuthorizationResult(bool isAuthorised)
         {

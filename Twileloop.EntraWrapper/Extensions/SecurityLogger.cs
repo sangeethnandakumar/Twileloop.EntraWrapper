@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Options;
+using Twileloop.EntraWrapper.Models;
 
-namespace Twileloop.EntraWrapper
+namespace Twileloop.EntraWrapper.Extensions
 {
     public class SecurityLogger
     {

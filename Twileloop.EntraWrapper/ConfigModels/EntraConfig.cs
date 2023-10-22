@@ -1,4 +1,4 @@
-﻿namespace Twileloop.EntraWrapper
+﻿namespace Twileloop.EntraWrapper.ConfigModels
 {
     public record EntraConfig
     {

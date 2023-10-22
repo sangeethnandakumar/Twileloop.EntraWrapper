@@ -4,11 +4,14 @@ using Microsoft.Extensions.Options;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Threading.Tasks;
+using Twileloop.EntraWrapper.ConfigModels;
+using Twileloop.EntraWrapper.Extensions;
+using Twileloop.EntraWrapper.Models;
 
-namespace Twileloop.EntraWrapper
+namespace Twileloop.EntraWrapper.AuthorizationDrivers
 {
 
-    public class RoleValidationHandler : AuthorizationHandler<RoleValidationRequirement>
+    public class AuthorizationPolicyHandler : AuthorizationHandler<AuthorizationPolicyRequirement>
     {
         private readonly IHttpContextAccessor httpContextAccessor;
         private readonly IOptions<SecurityOptions> securityOptions;
@@ -16,7 +19,7 @@ namespace Twileloop.EntraWrapper
         private readonly SecurityLogger securityLogger;
         private readonly JwtSecurityTokenHandler tokenHandler;
 
-        public RoleValidationHandler(IOptions<SecurityOptions> securityOptions, IOptions<EntraConfig> entraConfig, SecurityLogger securityLogger, IHttpContextAccessor httpContextAccessor)
+        public AuthorizationPolicyHandler(IOptions<SecurityOptions> securityOptions, IOptions<EntraConfig> entraConfig, SecurityLogger securityLogger, IHttpContextAccessor httpContextAccessor)
         {
             this.securityOptions = securityOptions;
             this.entraConfig = entraConfig;
@@ -24,10 +27,10 @@ namespace Twileloop.EntraWrapper
             this.httpContextAccessor = httpContextAccessor;
             tokenHandler = new JwtSecurityTokenHandler();
         }
-        
+
 
         protected async override Task HandleRequirementAsync(
-            AuthorizationHandlerContext context, RoleValidationRequirement requirement)
+            AuthorizationHandlerContext context, AuthorizationPolicyRequirement requirement)
         {
             if (httpContextAccessor.HttpContext.Response.StatusCode == 401)
             {

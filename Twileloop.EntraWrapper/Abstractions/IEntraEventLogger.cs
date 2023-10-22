@@ -1,4 +1,4 @@
-﻿namespace Twileloop.EntraWrapper
+﻿namespace Twileloop.EntraWrapper.Abstractions
 {
     public interface IEntraEventLogger
     {

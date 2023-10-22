@@ -8,8 +8,12 @@ using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Twileloop.EntraWrapper.AuthorizationDrivers;
+using Twileloop.EntraWrapper.ConfigModels;
+using Twileloop.EntraWrapper.Models;
+using AuthorizationPolicy = Twileloop.EntraWrapper.ConfigModels.AuthorizationPolicy;
 
-namespace Twileloop.EntraWrapper
+namespace Twileloop.EntraWrapper.Extensions
 {
     public static class BuilderExtensions
     {
@@ -26,7 +30,7 @@ namespace Twileloop.EntraWrapper
             services.AddSingleton(Options.Create(securityOptions));
             services.AddSingleton(Options.Create(entraConfig));
             services.AddSingleton<SecurityLogger>();
-            services.AddTransient<IAuthorizationHandler, RoleValidationHandler>();
+            services.AddTransient<IAuthorizationHandler, AuthorizationPolicyHandler>();
             return services;
         }
 
@@ -53,7 +57,7 @@ namespace Twileloop.EntraWrapper
                         {
                             LogInfo($"Registering policy '{policy.Name}'", securityOptions);
                         }
-                        p.AddRequirements(new RoleValidationRequirement(policy));
+                        p.AddRequirements(new AuthorizationPolicyRequirement(policy));
                         if (entraConfig.TokenValidation.Enable)
                         {
                             p.RequireAuthenticatedUser();
