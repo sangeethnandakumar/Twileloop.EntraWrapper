@@ -84,18 +84,6 @@ Here I prefer to channel incoming logs to Console window
 //Step 1: Implement interface
 public class MyLogger : IEntraEventLogger
 {
-    private readonly ILogger<MyLogger> logger;
-    private readonly IOptions<EntraConfig> entraConfig;
-    private readonly IOptions<SecurityOptions> secuityOptions;
-
-    //Step 2: Inject whatever necessary for you (all optional)
-    public MyLogger(ILogger<MyLogger> logger, IOptions<EntraConfig> entraConfig, IOptions<SecurityOptions> secuityOptions)
-    {
-        this.logger = logger;
-        this.entraConfig = entraConfig;
-        this.secuityOptions = secuityOptions;
-    }
-
     public void OnFailure(string message)
     {
         //Step 3: Channel failure logs
